@@ -92,8 +92,8 @@ export default class WaypointPhoto extends Component {
         Actions.pop();
         body.append('photo', {uri: path,name: 'photo.png', filename :'imageName.png',type: 'image/png'});
         body.append('Content-Type', 'image/png');
-        body.append('lng', this.state.longitude);
-        body.append('lat',this.state.latitude);
+        body.append('lng', this.state.location.longitude);
+        body.append('lat',this.state.location.latitude);
         console.log('Here is the lng and lat');
         console.log(this.state.location.longitude);
         console.log(this.state.location.latitude);

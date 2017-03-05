@@ -36,34 +36,62 @@ export default class Map_Scene extends Component {
           longitudeDelta: 0.123,
           }
         })
-        console.log(this.state.region);
+        this.download_markers();
+
       }
     )
-
   }
 
-  donwload_markers() {
-    return fetch("")
+  download_markers() {
+    return fetch("http://ture.azurewebsites.net/allPhotos")
     .then((response) => response.json())
     .then((responseJson) => {
+
       //Convert to JSON array, and for each one call onMapPress
+      for(var i = 0; i < responseJson.length; i++) {
+
+        this.onDownLoad(responseJson[i]);
+      }
+
+
     })
   }
 
-  onMapPress(e) {
+  onDownLoad(e) {
     this.setState({
       markers: [
         ...this.state.markers,
         {
-          coordinate: e.nativeEvent.coordinate,
           key: id++,
-
+          coordinate: {
+            latitude: e.lat,
+            longitude: e.lng,
+          },
+          caption: e.caption,
+          url: e.url,
+          happiness: e.happiness,
         },
       ],
     });
+    if(e.happiness < 0.4) {
+      this.setState({
+        color: "#F44336"
+      })
+    }
+    else if(e.happiness > 0.4 && e.happiness < 0.6) {
+      this.setState({
+        color: "#FFEB3B",
+      })
+    }
+    else {
+      this.setState({
+      color: "#00E5FF",
+    })
+    }
   }
 
   render() {
+
     return (
         <View style={styles.container}>
         <View style={styles.header}>
@@ -81,14 +109,18 @@ export default class Map_Scene extends Component {
         <MapView style={styles.map}
           showsUserLocation={true}
           initialRegion={this.state.region}
-          onPress={(e) => this.onMapPress(e)}
-          >
 
+          >
             {this.state.markers.map(marker => (
             <MapView.Marker
               key={marker.key}
               coordinate={marker.coordinate}
-            />
+              title={marker.caption}
+              pinColor={this.state.color}
+            >
+
+
+            </MapView.Marker>
           ))}
 
         </MapView>

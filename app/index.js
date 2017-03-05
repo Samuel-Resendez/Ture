@@ -9,6 +9,7 @@ import WaypointPhoto from './photo.js';
 import Itinerary from './itinerary.js';
 import WayPointDescription from './description.js';
 import TravelPath from './route.js';
+import Registration from './register.js';
 
 export default class Ture extends Component {
   render() {
@@ -16,6 +17,7 @@ export default class Ture extends Component {
       <Router>
         <Scene key="root">
           <Scene key="login" component={Ture_Login} title="Login" initial={true} hideNavBar={true}/>
+          <Scene key="register" component={Registration} title="register" hideNavBar={true}/>
           <Scene key="MapScene" component={Map_Scene} title="MapScene" hideNavBar={true}/>
           <Scene key="PhotoScene" component={WaypointPhoto} title="Photos" hideNavBar={true}/>
           <Scene key="Itinerary" component={Itinerary} title="Itinerary" hideNavBar={true}/>

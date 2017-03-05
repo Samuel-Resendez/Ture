@@ -42,6 +42,23 @@ export default class TravelPath extends Component {
           }
         ]
         });
+        return fetch("http://ture.azurewebsites.net/photoNearby", {
+          method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          'lat' : position.coords.latitude,
+          'lng' : position.coords.longitude,
+        })
+      })
+      .then((response) => response.json())
+      .then((responseJson) => {
+        for(var i = 0 ; i < responseJson.length; i++) {
+          this.onMapPress(responseJson[i]);
+        }
+      });
 
         console.log(this.state.region);
       }
@@ -52,19 +69,39 @@ export default class TravelPath extends Component {
       markers: [
         ...this.state.markers,
         {
-          coordinate: e.nativeEvent.coordinate,
-          key: id++,
+          coordinate: {
+            latitude: e.lat,
+            longitude: e.lng,
+          },
+          key: e.id,
+          caption: e.caption,
+
 
         },
       ],
       vertices: [
         ...this.state.vertices,
         {
-          latitude: e.nativeEvent.coordinate.latitude,
-          longitude: e.nativeEvent.coordinate.longitude,
+          latitude: e.lat,
+          longitude: e.lng,
         }
       ]
     });
+    if(e.happiness < 0.4) {
+      this.setState({
+        color: "#F44336"
+      })
+    }
+    else if(e.happiness > 0.4 && e.happiness < 0.6) {
+      this.setState({
+        color: "#FFEB3B",
+      })
+    }
+    else {
+      this.setState({
+      color: "#00E5FF",
+    })
+    }
   }
   render() {
 
@@ -76,16 +113,20 @@ export default class TravelPath extends Component {
         <MapView style={styles.map}
           showsUserLocation={true}
           initialRegion={this.state.region}
-          onPress={(e) => this.onMapPress(e)}
+
           >
 
           {this.state.markers.map(marker => (
             <MapView.Marker
               key={marker.key}
               coordinate={marker.coordinate}
+              title={"Waypoint: " + marker.key}
+              description={marker.caption}
+              pinColor={this.state.color}
             /> ))}
           <MapView.Polyline
             strokeColor= '#2980b9'
+            geodesic={true}
             strokeWidth={2}
             coordinates={this.state.vertices}
           />

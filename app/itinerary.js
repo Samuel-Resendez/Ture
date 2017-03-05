@@ -5,6 +5,8 @@ import { Router, Scene,Actions} from 'react-native-router-flux';
 
 
 
+let id=0
+
 export default class Itinerary extends Component {
 
   constructor(props) {
@@ -13,9 +15,55 @@ export default class Itinerary extends Component {
     this.state = {
       dataSource: ds.cloneWithRows([
         'John', 'Joel', 'James', 'Jimmy', 'Jackson', 'Jillian', 'Julie', 'Devin'
-      ])
+      ]),
+      node_storage: [],
     };
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        return fetch("http://ture.azurewebsites.net/photoNearby", {
+          method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          'lat' : position.coords.latitude,
+          'lng' : position.coords.longitude,
+        })
+      })
+      .then((response) => response.json())
+      .then((responseJson) => {
+
+        for(var i = responseJson.length-1; i > 0; i--) {
+          this.onDownLoad(responseJson[i]);
+        }
+        this.setState({
+          dataSource: this.state.dataSource.cloneWithRows(this.state.node_storage),
+        })
+
+
+      });
+    });
   }
+
+  onDownLoad(e) {
+    console.log(e);
+    this.setState({
+      node_storage: [
+        ...this.state.node_storage,
+        {
+          key: e.id,
+          coordinate: {
+            latitude: e.lat,
+            longitude: e.lng,
+          },
+          caption: e.caption,
+          url: e.url,
+        },
+      ],
+    });
+  }
+
   render() {
     return (
       <View style={styles.container}>
@@ -31,17 +79,22 @@ export default class Itinerary extends Component {
         <ListView
           dataSource={this.state.dataSource}
           style={styles.list_view}
+
           renderRow={(rowData) =>
+
             <View style={styles.cell_container}>
             <TouchableOpacity style={styles.cell_container}
-              onPress={Actions.Description}
+              onPress={() => Actions.Description({index: rowData.key,
+              caption: rowData.caption,
+              url: rowData.url,
+              })}
               >
-            <Image source={require("../assets/marker.png")} style={styles.thumbnail} />
+            <Image source={{uri: rowData.url }} style={styles.thumbnail} />
             <View style={styles.cell_description}>
-              <Text style={[styles.ture_text, styles.bold]}>{rowData}</Text>
-              <Text style={[styles.ture_text, styles.sub_text]}>Placeholder </Text>
+              <Text style={[styles.ture_text, styles.bold]}> Waypoint: {rowData.key}</Text>
+              <Text style={[styles.ture_text, styles.sub_text]}> Microsoft's Response: {rowData.caption} </Text>
             </View>
-            <Text style={[styles.ture_text, styles.sub_text]}> A short blurb by Microsoft! </Text>
+
           </TouchableOpacity>
           </View> } />
       </View>
@@ -76,7 +129,7 @@ const styles = StyleSheet.create({
 
   },
   ture_text: {
-
+    marginRight: 10,
     fontSize: 20,
     fontFamily: 'sans-serif-thin',
     color: "#000000",
@@ -93,6 +146,7 @@ const styles = StyleSheet.create({
     flex: 20,
   },
   thumbnail : {
+    borderRadius: 5,
     height: 80,
     width: 80,
   },
@@ -103,9 +157,11 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
   },
   cell_description: {
+    marginLeft: 10,
     flexDirection: 'column',
   },
   sub_text: {
+    width: 300,
     fontSize: 15,
   },
   bold: {
