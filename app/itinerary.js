@@ -21,13 +21,21 @@ export default class Itinerary extends Component {
       <View style={styles.container}>
         <View style={styles.header}>
           <Text style={[styles.ture_text, styles.ture_header, styles.white]}> Ture Itinerary </Text>
+          <TouchableOpacity
+            onPress={Actions.Route}
+            >
+            <Image source={require('../assets/icon.png')} style={styles.map_icon} />
+          </TouchableOpacity>
+
         </View>
         <ListView
           dataSource={this.state.dataSource}
           style={styles.list_view}
           renderRow={(rowData) =>
             <View style={styles.cell_container}>
-            <TouchableOpacity style={styles.cell_container}>
+            <TouchableOpacity style={styles.cell_container}
+              onPress={Actions.Description}
+              >
             <Image source={require("../assets/marker.png")} style={styles.thumbnail} />
             <View style={styles.cell_description}>
               <Text style={[styles.ture_text, styles.bold]}>{rowData}</Text>
@@ -47,23 +55,38 @@ const styles = StyleSheet.create({
   container :{
     flex: 1,
     backgroundColor: "#FFFFFF",
+
   },
   header: {
-    height: 80,
+    height: 60,
     backgroundColor: "#2980b9",
     flexDirection: 'row',
     justifyContent: 'center',
 
+
+
+  },
+  map_icon: {
+    marginTop: 15,
+    marginRight: 15,
+
+    width: 30,
+    height: 30,
+    tintColor: "#FFFFFF",
+
   },
   ture_text: {
-    marginTop: 10,
+
     fontSize: 20,
     fontFamily: 'sans-serif-thin',
     color: "#000000",
   },
   ture_header: {
+    marginTop: 10,
     fontSize: 30,
-    marginTop: 20,
+    textAlign: 'center',
+
+    flex: 1,
   },
 
   list_view: {

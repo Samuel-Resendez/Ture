@@ -4,10 +4,10 @@ import { Router, Scene,Actions} from 'react-native-router-flux';
 
 import MapView from 'react-native-maps';
 
-
 let id = 0;
+let vertex=0;
 
-export default class Map_Scene extends Component {
+export default class TravelPath extends Component {
 
   constructor(props) {
     super(props);
@@ -19,9 +19,8 @@ export default class Map_Scene extends Component {
           latitudeDelta: 0.0922,
           longitudeDelta: 1.3*0.0922,
         },
-
-      markers: [],
-
+        markers: [],
+        vertices: [],
     };
   }
 
@@ -29,27 +28,25 @@ export default class Map_Scene extends Component {
     navigator.geolocation.getCurrentPosition(
       (position) => {
 
-        this.setState({ region : {
+        this.setState( { region : {
           latitude: position.coords.latitude,
           longitude: position.coords.longitude,
           latitudeDelta: 0.0922,
           longitudeDelta: 0.123,
+        },
+        vertices: [
+          ...this.state.vertices,
+          {
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
           }
-        })
+        ]
+        });
+
         console.log(this.state.region);
       }
     )
-
   }
-
-  donwload_markers() {
-    return fetch("")
-    .then((response) => response.json())
-    .then((responseJson) => {
-      //Convert to JSON array, and for each one call onMapPress
-    })
-  }
-
   onMapPress(e) {
     this.setState({
       markers: [
@@ -60,23 +57,21 @@ export default class Map_Scene extends Component {
 
         },
       ],
+      vertices: [
+        ...this.state.vertices,
+        {
+          latitude: e.nativeEvent.coordinate.latitude,
+          longitude: e.nativeEvent.coordinate.longitude,
+        }
+      ]
     });
   }
-
   render() {
+
     return (
         <View style={styles.container}>
         <View style={styles.header}>
-          <TouchableOpacity
-            onPress={Actions.PhotoScene}>
-          <Image source={require('../assets/camera.png')} style={styles.header_button}/>
-          </TouchableOpacity>
-          <Text style={styles.header_text}>Ture</Text>
-          <TouchableOpacity
-            onPress={Actions.Itinerary}
-            >
-          <Image source={require('../assets/marker.png')} style={styles.header_button}/>
-          </TouchableOpacity>
+          <Text style={styles.header_text}>Ture Trip</Text>
         </View>
         <MapView style={styles.map}
           showsUserLocation={true}
@@ -84,20 +79,22 @@ export default class Map_Scene extends Component {
           onPress={(e) => this.onMapPress(e)}
           >
 
-            {this.state.markers.map(marker => (
+          {this.state.markers.map(marker => (
             <MapView.Marker
               key={marker.key}
               coordinate={marker.coordinate}
-            />
-          ))}
-
+            /> ))}
+          <MapView.Polyline
+            strokeColor= '#2980b9'
+            strokeWidth={2}
+            coordinates={this.state.vertices}
+          />
         </MapView>
         </View>
 
     )
   }
 }
-
 
 styles = StyleSheet.create({
   container: {
@@ -134,4 +131,4 @@ styles = StyleSheet.create({
     bottom: 0,
   },
 })
-module.export=Map_Scene
+module.export=TravelPath

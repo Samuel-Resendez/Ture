@@ -15,8 +15,8 @@ export default class WaypointPhoto extends Component {
 
     this.state = {
       location: {
-        longitude: 'unknown',
-        latitude: 'unknown',
+        longitude: 52.5,
+        latitude: 52.5,
       },
      camera: {
        aspect: Camera.constants.Aspect.fill,
@@ -31,8 +31,8 @@ export default class WaypointPhoto extends Component {
   componentDidMount() {
     navigator.geolocation.getCurrentPosition(
       (position) => {
-
         this.setState({ location : {
+
           latitude: position.coords.latitude,
           longitude: position.coords.longitude,
           }
@@ -92,15 +92,16 @@ export default class WaypointPhoto extends Component {
         Actions.pop();
         body.append('photo', {uri: path,name: 'photo.png', filename :'imageName.png',type: 'image/png'});
         body.append('Content-Type', 'image/png');
-        body.append('longitude', this.state.longitude);
-        body.append('latitude',this.state.latitude);
-
+        body.append('lng', this.state.longitude);
+        body.append('lat',this.state.latitude);
+        console.log('Here is the lng and lat');
+        console.log(this.state.location.longitude);
+        console.log(this.state.location.latitude);
         var url = "http://ture.azurewebsites.net/photo"
         fetch(url ,{ method: 'POST',headers:{
           "Content-Type": "multipart/form-data",
-          "otherHeader": "foo",
         } , body :body} )
-        .then((res) => checkStatus(res))
+
         .then((res) => res.json())
         .then((res) => { console.log("response" +JSON.stringify(res)); })
         .catch((e) => console.log(e))
