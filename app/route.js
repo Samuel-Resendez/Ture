@@ -1,12 +1,12 @@
 import React, { Component, } from 'react';
-import { View, Text, StyleSheet,Image,TextInput ,TouchableOpacity,StatusBar } from 'react-native';
+import { View, Text, StyleSheet,Image,TextInput ,TouchableOpacity,StatusBar, ScrollView } from 'react-native';
 import { Router, Scene,Actions} from 'react-native-router-flux';
 
 import MapView from 'react-native-maps';
 
 let id = 0;
 let vertex=0;
-
+let thing = 0;
 export default class TravelPath extends Component {
 
   constructor(props) {
@@ -24,7 +24,7 @@ export default class TravelPath extends Component {
     };
   }
 
-  componentDidMount() {
+  componentWillMount() {
     navigator.geolocation.getCurrentPosition(
       (position) => {
 
@@ -55,7 +55,7 @@ export default class TravelPath extends Component {
       })
       .then((response) => response.json())
       .then((responseJson) => {
-        for(var i = 0 ; i < responseJson.length; i++) {
+        for(var i = responseJson.length-1 ; i >= 0 ; i--) {
           this.onMapPress(responseJson[i]);
         }
       });
@@ -69,14 +69,13 @@ export default class TravelPath extends Component {
       markers: [
         ...this.state.markers,
         {
+          url: e.url,
           coordinate: {
             latitude: e.lat,
             longitude: e.lng,
           },
           key: e.id,
           caption: e.caption,
-
-
         },
       ],
       vertices: [
@@ -102,6 +101,10 @@ export default class TravelPath extends Component {
       color: "#00E5FF",
     })
     }
+  }
+
+  handleScroll(object) {
+    console.log(object);
   }
   render() {
 
@@ -131,7 +134,21 @@ export default class TravelPath extends Component {
             coordinates={this.state.vertices}
           />
         </MapView>
+        <ScrollView style={styles.bot_controller}
+          horizontal={true}>
+          {this.state.markers.map(marker => (
+            <View style={styles.nav_element} key={thing++}>
+              <View style={styles.horiz_part}>
+                <Image source={{uri: marker.url}} style={styles.nav_icon}/>
+                <Text style={styles.nav_text}> Waypoint: {marker.key} </Text>
+              </View>
+
+            </View>
+          ))}
+
+        </ScrollView>
         </View>
+
 
     )
   }
@@ -171,5 +188,45 @@ styles = StyleSheet.create({
     right: 0,
     bottom: 0,
   },
+  bot_controller: {
+    flexDirection: 'row',
+    position: 'absolute',
+
+    top: 520,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'transparent',
+  },
+  nav_icon :{
+    borderRadius: 5,
+    marginTop: 10,
+    marginRight: 10,
+    width: 60,
+    height: 60,
+  },
+  horiz_part : {
+    opacity: 1,
+    width: 350,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+  },
+  nav_element: {
+    flex: 1,
+    borderRadius: 10,
+    marginTop: 10,
+    marginRight: 5,
+    marginBottom: 10,
+    marginLeft: 5,
+    opacity: 1,
+    backgroundColor: "#FFFFFF",
+  },
+  nav_text : {
+      marginLeft: 10,
+      fontFamily: 'sans-serif-thin',
+      color: "#000000",
+      fontSize: 30,
+  }
 })
 module.export=TravelPath

@@ -3,7 +3,41 @@ import { View, Text, StyleSheet,Image,TextInput ,TouchableOpacity } from 'react-
 import { Router, Scene,Actions,ActionConst } from 'react-native-router-flux';
 
 
+import * as firebase from 'firebase';
+
+firebase.initializeApp({
+    apiKey: "AIzaSyCcIw3CtklFMw7zrfj9J6MQGimzruB6TkI",
+    authDomain: "ture-7e864.firebaseapp.com",
+    databaseURL: "https://ture-7e864.firebaseio.com",
+    storageBucket: "ture-7e864.appspot.com",
+    messagingSenderId: "671983461893"
+  });
+
 export default class Ture_Login extends Component {
+
+  constructor(props) {
+    super(props)
+    this.state = {
+      email: 'unknown',
+      password: 'unknown',
+    }
+  }
+  login(email,pass) {
+    try {
+      firebase.auth()
+          .signInWithEmailAndPassword(email, pass);
+
+      console.log("Logged In!");
+      Actions.MapScene({place: 'hi'});
+      console.log("We have the line");
+      // Navigate to the Home page
+
+
+  } catch (error) {
+      console.log(error.toString())
+  }
+
+}
   render() {
     return (
       <View style={styles.background}>
@@ -14,14 +48,25 @@ export default class Ture_Login extends Component {
           <Text style={styles.sub_text}> Please enter info to log in</Text>
         </View>
 
-        <TextInput style={styles.input} placeholder="Username"
+        <TextInput style={styles.input} placeholder="Email"
+          placeholderTextColor="#FFFFFF"
+          selectionColor="#FFFFFF"
+          underlineColorAndroid="#FFFFFF"
+          onChangeText={(text) => {
+            this.setState({email: text});
+          }}
           ></TextInput>
         <TextInput style={styles.input} placeholder="Password"
+          placeholderTextColor="#FFFFFF"
+            underlineColorAndroid="#FFFFFF"
           secureTextEntry={true}
+          onChangeText={(text) => {
+            this.setState({password: text});
+          }}
           ></TextInput>
         <TouchableOpacity
           style={styles.login_btn}
-          onPress={Actions.MapScene}
+          onPress={() => this.login(this.state.email,this.state.password)}
           ><Text>LOGIN</Text>
         </TouchableOpacity>
         <TouchableOpacity
@@ -29,6 +74,7 @@ export default class Ture_Login extends Component {
           onPress={Actions.register}
           ><Text>REGISTER</Text>
         </TouchableOpacity>
+
       </View>
     )
   }
@@ -82,6 +128,7 @@ const styles = StyleSheet.create({
     marginRight: 20,
     marginBottom: 20,
     backgroundColor: '#3498db',
+    color: "#FFFFFF",
   }
 
 })

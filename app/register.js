@@ -1,8 +1,22 @@
 import React, { Component, } from 'react';
-import { View, Text, StyleSheet,Image,TextInput ,TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet,Image,TextInput ,TouchableOpacity, ScrollView, ToastAndroid } from 'react-native';
 import { Router, Scene,Actions,ActionConst } from 'react-native-router-flux';
 
+import * as firebase from "firebase";
+
+
+
+
 export default class Registration extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      email: "Unknown",
+      password: "Unknown",
+    }
+
+  }
+
   render() {
     return(
       <View style={styles.background}>
@@ -14,25 +28,57 @@ export default class Registration extends Component {
 
       <TextInput
         style={styles.input}
-        placeholder="Name"
+        placeholderTextColor="#FFFFFF"
+        selectionColor="#FFFFFF"
+        placeholder="Email"
+        underlineColorAndroid="#FFFFFF"
+        onChangeText={(text) => {
+          this.setState({email: text})
+        }}
       />
       <TextInput
         style={styles.input}
-        placeholder="email"
-      />
-      <TextInput
-        style={styles.input}
+        placeholderTextColor="#FFFFFF"
+        selectionColor="#FFFFFF"
         placeholder="Password"
+          underlineColorAndroid="#FFFFFF"
+          secureTextEntry={true}
+          onChangeText={(text) => {
+            this.setState({password: text})
+          }}
       />
+
       <TouchableOpacity
         style={styles.login_btn}
-        onPress={Actions.MapScene}>
+        onPress={() => this.signup(this.state.email,this.state.password)}>
         <Text> REGISTER </Text>
       </TouchableOpacity>
       </View>
     )
   }
+
+  async signup(email, pass) {
+
+    try {
+        await firebase.auth()
+            .createUserWithEmailAndPassword(email, pass);
+
+        console.log("Account created");
+
+        // Navigate to the Home page, the user is auto logged in
+        Actions.MapScene({place: 'hi'});
+
+    } catch (error) {
+        console.log(error.toString());
+        ToastAndroid.show(error.toString(),ToastAndroid.SHORT);
+    }
+
+
+  }
+
 }
+
+
 
 
 const styles = StyleSheet.create({
@@ -85,6 +131,7 @@ const styles = StyleSheet.create({
     marginRight: 20,
     marginBottom: 20,
     backgroundColor: '#3498db',
+    color: "#FFFFFF",
   }
 
 })

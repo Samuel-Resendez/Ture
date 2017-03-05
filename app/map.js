@@ -23,9 +23,6 @@ export default class Map_Scene extends Component {
       markers: [],
 
     };
-  }
-
-  componentDidMount() {
     navigator.geolocation.getCurrentPosition(
       (position) => {
 
@@ -41,6 +38,8 @@ export default class Map_Scene extends Component {
       }
     )
   }
+
+
 
   download_markers() {
     return fetch("http://ture.azurewebsites.net/allPhotos")
@@ -118,8 +117,6 @@ export default class Map_Scene extends Component {
               title={marker.caption}
               pinColor={this.state.color}
             >
-
-
             </MapView.Marker>
           ))}
 

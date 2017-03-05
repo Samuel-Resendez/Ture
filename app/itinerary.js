@@ -18,6 +18,9 @@ export default class Itinerary extends Component {
       ]),
       node_storage: [],
     };
+
+  }
+  componentWillMount() {
     navigator.geolocation.getCurrentPosition(
       (position) => {
         return fetch("http://ture.azurewebsites.net/photoNearby", {
@@ -94,7 +97,7 @@ export default class Itinerary extends Component {
               <Text style={[styles.ture_text, styles.bold]}> Waypoint: {rowData.key}</Text>
               <Text style={[styles.ture_text, styles.sub_text]}> Microsoft's Response: {rowData.caption} </Text>
             </View>
-
+            <Image source={require('../assets/forward.png')} style={[styles.map_icon, styles.black_tint]}/>
           </TouchableOpacity>
           </View> } />
       </View>
@@ -128,6 +131,9 @@ const styles = StyleSheet.create({
     tintColor: "#FFFFFF",
 
   },
+  black_tint: {
+    tintColor: "#000000",
+  },
   ture_text: {
     marginRight: 10,
     fontSize: 20,
@@ -146,7 +152,9 @@ const styles = StyleSheet.create({
     flex: 20,
   },
   thumbnail : {
+    marginLeft: 10,
     borderRadius: 5,
+    
     height: 80,
     width: 80,
   },
@@ -161,7 +169,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
   },
   sub_text: {
-    width: 300,
+    width: 200,
     fontSize: 15,
   },
   bold: {

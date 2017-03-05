@@ -4,6 +4,9 @@ import { Router, Scene,Actions} from 'react-native-router-flux';
 
 import Camera from 'react-native-camera';
 
+import DeviceInfo from 'react-native-device-info';
+
+import * as firebase from 'firebase';
 
 export default class WaypointPhoto extends Component {
 
@@ -58,8 +61,10 @@ export default class WaypointPhoto extends Component {
           aspect={this.state.camera.aspect}
           captureTarget={this.state.camera.captureTarget}
           type={this.state.camera.type}
+          defaultOnFocusComponent={true}
+          playSoundOnCapture={true}
           flashMode={this.state.camera.flashMode}
-          defaultTouchToFocus
+          defaultTouchToFocus={true}
           mirrorImage={false} >
           <TouchableOpacity
             onPress={this.takePicture.bind(this)}
@@ -94,6 +99,7 @@ export default class WaypointPhoto extends Component {
         body.append('Content-Type', 'image/png');
         body.append('lng', this.state.location.longitude);
         body.append('lat',this.state.location.latitude);
+        body.append('userid',firebase.auth().currentUser);
         console.log('Here is the lng and lat');
         console.log(this.state.location.longitude);
         console.log(this.state.location.latitude);
